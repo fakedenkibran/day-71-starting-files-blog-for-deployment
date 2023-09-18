@@ -1,3 +1,4 @@
+import os
 from datetime import date
 from flask import Flask, abort, render_template, redirect, url_for, flash, request
 from flask_bootstrap import Bootstrap5
@@ -10,7 +11,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from sqlalchemy.orm import relationship
 from forms import CreatePostForm, RegisterForm, LoginForm, CommentForm
 # Optional: add contact me email functionality (Day 60)
-# import smtplib
+import smtplib
 
 
 '''
@@ -28,7 +29,8 @@ This will install the packages from the requirements.txt for this project.
 
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = '8BYkEfBA6O6donzWlSihBXox7C0sKR6b'
+app.config['SECRET_KEY'] = os.environ.get("FLASK_KEY")
+print(os.environ.get("FLASK_KEY"))
 ckeditor = CKEditor(app)
 Bootstrap5(app)
 
@@ -53,7 +55,7 @@ gravatar = Gravatar(app,
                     base_url=None)
 
 # CONNECT TO DB
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///posts.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get("DB_URI", 'sqlite:///posts.db')
 db = SQLAlchemy()
 db.init_app(app)
 
@@ -276,8 +278,10 @@ def contact():
 # Use environment variables instead (Day 35)
 
 # MAIL_ADDRESS = os.environ.get("EMAIL_KEY")
+#
 # MAIL_APP_PW = os.environ.get("PASSWORD_KEY")
-
+# print(MAIL_ADDRESS, MAIL_APP_PW)
+#
 # @app.route("/contact", methods=["GET", "POST"])
 # def contact():
 #     if request.method == "POST":
@@ -296,4 +300,4 @@ def contact():
 
 
 if __name__ == "__main__":
-    app.run(debug=True, port=5001)
+    app.run(debug=False, port=5001)
